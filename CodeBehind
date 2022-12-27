@@ -1,0 +1,133 @@
+string constring = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=BGV_Task;Integrated Security=True";
+
+        public void getemp()
+        {
+            using (SqlConnection con = new SqlConnection(constring))
+            {
+                using (SqlCommand cmd = new SqlCommand("Select * from Employee", con))
+                {
+                    cmd.CommandType = CommandType.Text;
+                    using (SqlDataAdapter sda = new SqlDataAdapter(cmd))
+                    {
+                        using (DataSet ds = new DataSet())
+                        {
+                            sda.Fill(ds);
+                            GridView1.DataSource = ds;
+                            GridView1.DataBind();
+
+                        }
+                    }
+                }
+            }
+        }
+
+        public void AddEmp()
+		{
+            string Val = string.Empty;
+            if (RadioMale.Checked)
+			{
+                Val = "Male";
+			}
+            else if(RadioFeMale.Checked)
+			{
+                Val = "Female";
+            }
+
+            using (SqlConnection con = new SqlConnection(constring))
+            {
+                SqlCommand cmd = new SqlCommand("AddEmp", con);
+               cmd.CommandType = CommandType.StoredProcedure;
+               cmd.Parameters.AddWithValue("Empname", TextBox1.Text);
+               cmd.Parameters.AddWithValue("mobilenum", TextBox2.Text);
+               cmd.Parameters.AddWithValue("gender", Val);
+               cmd.Parameters.AddWithValue("department", droplist.SelectedItem.Value);
+               cmd.Parameters.AddWithValue("email", TextBox5.Text);
+               con.Open();
+               cmd.ExecuteNonQuery();
+               con.Close();
+            }
+        }
+
+        public void clear()
+		{
+            TextBox1.Text = "";
+            TextBox2.Text = "";
+            //TextBox3.Text = "";
+            //TextBox4.Text = "";
+            TextBox5.Text = "";
+
+        }
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+            if (IsPostBack == false)
+            {
+                getemp();
+            }
+        }
+
+        protected void GridView1_RowDeleting(object sender, GridViewDeleteEventArgs e)
+        {
+            GridViewRow row = GridView1.Rows[e.RowIndex];
+            Label lab = (Label)row.FindControl("Label1");
+
+            using (SqlConnection con = new SqlConnection(constring))
+            {
+                con.Open();
+                SqlCommand cmd = new SqlCommand("Delete from Employee where Empid='" + lab.Text + "'", con);
+                cmd.ExecuteNonQuery();
+                con.Close();
+            }
+            getemp();
+
+
+        }
+
+		protected void Button1_Click(object sender, EventArgs e)
+		{
+           AddEmp();
+            clear();
+            getemp();
+        }
+
+		protected void GridView1_RowEditing(object sender, GridViewEditEventArgs e)
+		{
+            GridView1.EditIndex = e.NewEditIndex;
+            clear();
+            getemp();
+        }
+
+		protected void GridView1_RowUpdating(object sender, GridViewUpdateEventArgs e)
+		{
+            GridViewRow row = GridView1.Rows[e.RowIndex];
+            Label l1 =(Label)row.FindControl("Label1");
+            TextBox t1 = (TextBox)row.FindControl("TextBox1");
+            TextBox t2 = (TextBox)row.FindControl("TextBox3");
+            TextBox t3 = (TextBox)row.FindControl("TextBox4");
+            TextBox t4 = (TextBox)row.FindControl("TextBox5");
+            TextBox t5 = (TextBox)row.FindControl("TextBox6");
+
+            using (SqlConnection con = new SqlConnection(constring))
+            {
+                SqlCommand cmd = new SqlCommand("UpdateEmp", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("EmpId", l1.Text);
+                cmd.Parameters.AddWithValue("Empname",t1.Text);
+                cmd.Parameters.AddWithValue("mobileno",t2.Text);
+                cmd.Parameters.AddWithValue("gender",t3.Text);
+                cmd.Parameters.AddWithValue("dept",t4.Text);
+                cmd.Parameters.AddWithValue("email", t5.Text);
+                con.Open();
+                cmd.ExecuteNonQuery();
+                con.Close();
+            }
+            GridView1.EditIndex = -1;
+            getemp();
+
+        }
+
+		protected void GridView1_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
+		{
+            GridView1.EditIndex = -1;
+            getemp();
+        }
