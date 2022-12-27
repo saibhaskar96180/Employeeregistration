@@ -1,4 +1,4 @@
-string constring = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=BGV_Task;Integrated Security=True";
+string constring = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Registration;Integrated Security=True";
 
         public void getemp()
         {
