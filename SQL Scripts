@@ -1,5 +1,6 @@
 
-Create database BGV_Task
+Create database Registration
+use Registration
 
 Create table Employee(EmpID int primary key identity,EmpName varchar(30),mobileno bigint,Gender varchar(30),Department varchar(30),Email varchar(40))
 
